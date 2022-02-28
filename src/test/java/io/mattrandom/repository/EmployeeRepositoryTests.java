@@ -122,4 +122,23 @@ class EmployeeRepositoryTests {
         //then
         assertThat(empUpdated.getEmail()).isEqualTo("changed@gmail.com");
     }
+
+    @Test
+    @DisplayName("JUnit test for verifying if an Employee was properly removed")
+    void givenEmployee_whenDeleteObject_thenRemoveEmployee() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        employeeRepository.delete(empSaved);
+        Optional<Employee> empById = employeeRepository.findById(employee.getId());
+
+        //then
+        assertThat(empById).isEmpty();
+    }
 }
