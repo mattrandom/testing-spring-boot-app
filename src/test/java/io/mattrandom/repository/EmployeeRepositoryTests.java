@@ -143,7 +143,7 @@ class EmployeeRepositoryTests {
     }
 
     @Test
-    @DisplayName("JUnit test for verifying if an JPQL method is correctly executed")
+    @DisplayName("JUnit test for verifying if an JPQL method (custom query with index) is correctly executed")
     void givenFirstNameAndLastName_whenFindByJPQL_thenReturnEmployeeObject() {
         //given
         Employee employee = Employee.builder()
@@ -155,6 +155,66 @@ class EmployeeRepositoryTests {
 
         //when
         Employee byFirstNameAndLastName = employeeRepository.findByJPQL("Matt", "Random");
+
+        //then
+        assertThat(byFirstNameAndLastName).isNotNull();
+        assertThat(byFirstNameAndLastName.getFirstName()).isEqualTo("Matt");
+        assertThat(byFirstNameAndLastName.getLastName()).isEqualTo("Random");
+    }
+
+    @Test
+    @DisplayName("JUnit test for verifying if an JPQL method (custom query with named parameters) is correctly executed")
+    void givenFirstNameAndLastName_whenFindByJPQLNamedParams_thenReturnEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Employee byFirstNameAndLastName = employeeRepository.findByJPQLNamedParams("Matt", "Random");
+
+        //then
+        assertThat(byFirstNameAndLastName).isNotNull();
+        assertThat(byFirstNameAndLastName.getFirstName()).isEqualTo("Matt");
+        assertThat(byFirstNameAndLastName.getLastName()).isEqualTo("Random");
+    }
+
+    @Test
+    @DisplayName("JUnit test for verifying if an Native SQL method (Custom Native Query with index parameters) is correctly executed")
+    void givenFirstNameAndLastName_whenFindByNativeSQL_thenReturnEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Employee byFirstNameAndLastName = employeeRepository.findByNativeSQL("Matt", "Random");
+
+        //then
+        assertThat(byFirstNameAndLastName).isNotNull();
+        assertThat(byFirstNameAndLastName.getFirstName()).isEqualTo("Matt");
+        assertThat(byFirstNameAndLastName.getLastName()).isEqualTo("Random");
+    }
+
+    @Test
+    @DisplayName("JUnit test for verifying if an Native SQL method (Custom Native Query with named parameters) is correctly executed")
+    void givenFirstNameAndLastName_whenFindByNativeSQLNamedParams_thenReturnEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Employee byFirstNameAndLastName = employeeRepository.findByNativeSQNamedParams("Matt", "Random");
 
         //then
         assertThat(byFirstNameAndLastName).isNotNull();
