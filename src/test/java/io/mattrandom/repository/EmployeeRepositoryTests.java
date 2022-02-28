@@ -83,4 +83,25 @@ class EmployeeRepositoryTests {
         assertThat(empByID.get().getLastName()).hasSize(employee.getLastName().length());
 
     }
+
+    @Test
+    @DisplayName("JUnit test for fetching an Employee object by 'email' property")
+    void givenEmployee_whenFindByEmail_thenEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Employee empByEmail = employeeRepository.findByEmail(employee.getEmail()).get();
+
+        //then
+        assertThat(empByEmail).isNotNull();
+        assertThat(empByEmail.getEmail()).isEqualTo(employee.getEmail());
+
+
+    }
 }
