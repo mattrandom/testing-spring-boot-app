@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,6 +61,26 @@ class EmployeeRepositoryTests {
         assertThat(employeesFounded).isNotNull();
         assertThat(employeesFounded.get(0).getFirstName()).isEqualTo(employee1.getFirstName());
         assertThat(employeesFounded).hasSize(2);
+
+    }
+
+    @Test
+    @DisplayName("JUnit test for fetching a single Employee object")
+    void givenEmployee_whenFindById_thenEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Optional<Employee> empByID = employeeRepository.findById(employee.getId());
+
+        //then
+        assertThat(empByID.get()).isNotNull();
+        assertThat(empByID.get().getLastName()).hasSize(employee.getLastName().length());
 
     }
 }
