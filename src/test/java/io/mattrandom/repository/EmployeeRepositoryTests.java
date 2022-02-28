@@ -141,4 +141,24 @@ class EmployeeRepositoryTests {
         //then
         assertThat(empById).isEmpty();
     }
+
+    @Test
+    @DisplayName("JUnit test for verifying if an JPQL method is correctly executed")
+    void givenFirstNameAndLastName_whenFindByJPQL_thenReturnEmployeeObject() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
+
+        //when
+        Employee byFirstNameAndLastName = employeeRepository.findByJPQL("Matt", "Random");
+
+        //then
+        assertThat(byFirstNameAndLastName).isNotNull();
+        assertThat(byFirstNameAndLastName.getFirstName()).isEqualTo("Matt");
+        assertThat(byFirstNameAndLastName.getLastName()).isEqualTo("Random");
+    }
 }
