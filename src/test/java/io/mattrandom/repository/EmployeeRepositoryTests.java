@@ -1,6 +1,7 @@
 package io.mattrandom.repository;
 
 import io.mattrandom.model.Employee;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,21 @@ class EmployeeRepositoryTests {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @Test
-    @DisplayName("JUnit test for saving Employee object")
-    void givenEmployeeObject_whenSave_thenReturnSavedEmployee() {
-        //given
-        Employee employee = Employee.builder()
+    private Employee employee;
+
+    @BeforeEach
+    void setUp() {
+        employee = Employee.builder()
                 .firstName("Matt")
                 .lastName("Random")
                 .email("test@gmail.com")
                 .build();
+    }
+
+    @Test
+    @DisplayName("JUnit test for saving Employee object")
+    void givenEmployeeObject_whenSave_thenReturnSavedEmployee() {
+        //given
 
         //when
         Employee savedEmployee = employeeRepository.save(employee);
@@ -40,11 +47,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for getting Employees collection")
     void givenEmployeesList_whenFindAll_thenReturnEmployeesList() {
         //given
-        Employee employee1 = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
 
         Employee employee2 = Employee.builder()
                 .firstName("Matheus")
@@ -52,14 +54,14 @@ class EmployeeRepositoryTests {
                 .email("email@gmail.com")
                 .build();
 
-        List<Employee> employees = employeeRepository.saveAll(List.of(employee1, employee2));
+        List<Employee> employees = employeeRepository.saveAll(List.of(employee, employee2));
 
         //when
         List<Employee> employeesFounded = employeeRepository.findAll();
 
         //then
         assertThat(employeesFounded).isNotNull();
-        assertThat(employeesFounded.get(0).getFirstName()).isEqualTo(employee1.getFirstName());
+        assertThat(employeesFounded.get(0).getFirstName()).isEqualTo(employee.getFirstName());
         assertThat(employeesFounded).hasSize(2);
 
     }
@@ -68,11 +70,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for fetching a single Employee object")
     void givenEmployee_whenFindById_thenEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -88,11 +85,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for fetching an Employee object by 'email' property")
     void givenEmployee_whenFindByEmail_thenEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -107,11 +99,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for checking if an email of Employee object was correctly updated")
     void givenEmployee_whenUpdateEmployee_thenUpdatedEmployee() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -127,11 +114,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for verifying if an Employee was properly removed")
     void givenEmployee_whenDeleteObject_thenRemoveEmployee() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -146,11 +128,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for verifying if an JPQL method (custom query with index) is correctly executed")
     void givenFirstNameAndLastName_whenFindByJPQL_thenReturnEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -166,11 +143,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for verifying if an JPQL method (custom query with named parameters) is correctly executed")
     void givenFirstNameAndLastName_whenFindByJPQLNamedParams_thenReturnEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -186,11 +158,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for verifying if an Native SQL method (Custom Native Query with index parameters) is correctly executed")
     void givenFirstNameAndLastName_whenFindByNativeSQL_thenReturnEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
@@ -206,11 +173,6 @@ class EmployeeRepositoryTests {
     @DisplayName("JUnit test for verifying if an Native SQL method (Custom Native Query with named parameters) is correctly executed")
     void givenFirstNameAndLastName_whenFindByNativeSQLNamedParams_thenReturnEmployeeObject() {
         //given
-        Employee employee = Employee.builder()
-                .firstName("Matt")
-                .lastName("Random")
-                .email("test@gmail.com")
-                .build();
         Employee empSaved = employeeRepository.save(employee);
 
         //when
