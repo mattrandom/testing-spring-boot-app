@@ -101,7 +101,25 @@ class EmployeeRepositoryTests {
         //then
         assertThat(empByEmail).isNotNull();
         assertThat(empByEmail.getEmail()).isEqualTo(employee.getEmail());
+    }
 
+    @Test
+    @DisplayName("JUnit test for checking if an email of Employee object was correctly updated")
+    void givenEmployee_whenUpdateEmployee_thenUpdatedEmployee() {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        Employee empSaved = employeeRepository.save(employee);
 
+        //when
+        Employee empFetched = employeeRepository.findById(employee.getId()).get();
+        empFetched.setEmail("changed@gmail.com");
+        Employee empUpdated = employeeRepository.save(empFetched);
+
+        //then
+        assertThat(empUpdated.getEmail()).isEqualTo("changed@gmail.com");
     }
 }
