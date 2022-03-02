@@ -92,7 +92,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    @DisplayName("JUnit test for verifying if Employee's colelction is empty")
+    @DisplayName("JUnit test for verifying if Employee's collection is empty")
     void givenEmptyEmployeeList_whenGetAllEmployees_thenReturnEmptyEmployeeList() {
         //given
         given(employeeRepository.findAll()).willReturn(Collections.emptyList());
@@ -103,6 +103,32 @@ class EmployeeServiceTest {
         //then
         assertThat(getEmployeeList).isEmpty();
         assertThat(getEmployeeList).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("JUnit test for fetching single Employee object by given ID")
+    void givenEmployeeObject_whenGetEmployeeById_thenReturnEmployee() {
+        //given
+        given(employeeRepository.findById(anyLong())).willReturn(Optional.of(employee));
+
+        //when
+        Employee emp = employeeService.getEmployeeById(anyLong());
+
+        //then
+        assertThat(emp).isNotNull();
+        then(employeeRepository).should(atLeastOnce()).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("JUnit test for fetching single Employee object by given ID")
+    void givenEmployeeObjet_whenGetEmployeeById_thenReturnEmployee() {
+        //given
+        given(employeeRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> employeeService.getEmployeeById(anyLong()));
+        then(employeeRepository).should(atLeastOnce()).findById(anyLong());
     }
 
 }
