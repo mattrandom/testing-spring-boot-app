@@ -120,7 +120,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    @DisplayName("JUnit test for fetching single Employee object by given ID")
+    @DisplayName("JUnit test for testing exception invocation")
     void givenEmployeeObjet_whenGetEmployeeById_thenReturnEmployee() {
         //given
         given(employeeRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -130,5 +130,22 @@ class EmployeeServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> employeeService.getEmployeeById(anyLong()));
         then(employeeRepository).should(atLeastOnce()).findById(anyLong());
     }
+
+    @Test
+    @DisplayName("JUnit test for updateEmployee method")
+    void givenEmployeeObjet_whenUpdateEmployee_thenReturnEmployeeUpdated() {
+        //given
+        given(employeeRepository.save(employee)).willReturn(employee);
+        employee.setEmail("whatever@asd.com");
+        employee.setFirstName("Mattrandom");
+
+        //when
+        Employee updatedEmployee = employeeService.updateEmployee(this.employee);
+
+        //then
+        assertThat(updatedEmployee.getFirstName()).isNotEqualTo("Matt");
+
+    }
+
 
 }

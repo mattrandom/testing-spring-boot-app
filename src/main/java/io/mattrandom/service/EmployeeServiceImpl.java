@@ -35,4 +35,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee getEmployeeById(Long id) {
         return employeeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Employee with given ID is not exist" + id));
     }
+
+    @Override
+    public Employee updateEmployee(Employee employeeRequest) {
+        return employeeRepository.save(employeeRequest);
+    }
 }
