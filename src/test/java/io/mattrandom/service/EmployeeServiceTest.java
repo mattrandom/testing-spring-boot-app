@@ -132,7 +132,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    @DisplayName("JUnit test for updateEmployee method")
+    @DisplayName("JUnit test for updating Employee object")
     void givenEmployeeObjet_whenUpdateEmployee_thenReturnEmployeeUpdated() {
         //given
         given(employeeRepository.save(employee)).willReturn(employee);
@@ -146,6 +146,21 @@ class EmployeeServiceTest {
         assertThat(updatedEmployee.getFirstName()).isNotEqualTo("Matt");
 
     }
+
+    @Test
+    @DisplayName("JUnit test for deleting Employee object by id")
+    void givenEmployeeId_whenDeleteEmployee_thenReturnNothing() {
+        //given
+        Long employeeId = 1L;
+
+        //when
+        employeeService.deleteEmployee(employeeId);
+
+        //then
+        then(employeeRepository).should(atLeastOnce()).deleteById(employeeId);
+
+    }
+
 
 
 }
