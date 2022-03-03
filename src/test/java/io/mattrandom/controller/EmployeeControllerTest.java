@@ -16,14 +16,21 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
 class EmployeeControllerTest {
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -31,8 +38,6 @@ class EmployeeControllerTest {
     @MockBean
     private EmployeeService employeeService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("Testing POST method")
@@ -52,11 +57,40 @@ class EmployeeControllerTest {
 
         //then
         response.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(employee.getEmail())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(employee.getEmail())))
+                .andExpect(ResponseBodyMatchers.responseBody().containsObjectAsJson(employee, Employee.class));;
+    }
 
+    @Test
+    @DisplayName("Testing GET all method")
+    void givenEmployeeList_whenGetEmployees_thenReturnEmployeeList() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+
+        Employee employee2 = Employee.builder()
+                .firstName("Matheus")
+                .lastName("Siegmund")
+                .email("ok@gmail.com")
+                .build();
+
+        List<Employee> employees = Arrays.asList(employee, employee2);
+
+        given(employeeService.getAllEmployees()).willReturn(employees);
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/employees"));
+
+        //then
+        response.andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(employees.size())));
     }
 
 }

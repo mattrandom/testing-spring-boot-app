@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/employees")
@@ -14,14 +16,13 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public Employee createEmployee(@RequestBody Employee employee) {
-//        return employeeService.saveEmployee(employee);
-//    }
-
     @PostMapping
-    public ResponseEntity<Employee> createEmployeeResponseEntity(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.saveEmployee(employee));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Employee>> getEmployees() {
+        return ResponseEntity.status(HttpStatus.OK).body(employeeService.getAllEmployees());
     }
 }
