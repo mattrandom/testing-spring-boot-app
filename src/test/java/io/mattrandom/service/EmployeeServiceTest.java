@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class EmployeeServiceTest {
 
     @Mock
-    private EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepositoryMock;
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;
@@ -46,8 +46,8 @@ class EmployeeServiceTest {
     @DisplayName("JUnit test for saveEmployee method")
     void givenEmployeeObject_whenSaveEmployee_thenReturnEmployeeObject() {
         //given
-        given(employeeRepository.findByEmail(employee.getEmail())).willReturn(Optional.empty());
-        given(employeeRepository.save(any(Employee.class))).willReturn(employee);
+        given(employeeRepositoryMock.findByEmail(employee.getEmail())).willReturn(Optional.empty());
+        given(employeeRepositoryMock.save(any(Employee.class))).willReturn(employee);
 
         //when
         Employee employeeSaved = employeeService.saveEmployee(employee);
@@ -60,12 +60,12 @@ class EmployeeServiceTest {
     @DisplayName("JUnit test verifying if the exception is being thrown")
     void givenExistingEmail_whenSaveEmployee_thenThrowsException() {
         //given
-        given(employeeRepository.findByEmail(employee.getEmail())).willReturn(Optional.of(employee));
+        given(employeeRepositoryMock.findByEmail(employee.getEmail())).willReturn(Optional.of(employee));
 
         //when & then
         assertThrows(ResourceNotFoundException.class, () -> employeeService.saveEmployee(employee));
-        verify(employeeRepository, never()).save(any(Employee.class));
-        then(employeeRepository).should(never()).save(any(Employee.class));
+        verify(employeeRepositoryMock, never()).save(any(Employee.class));
+        then(employeeRepositoryMock).should(never()).save(any(Employee.class));
     }
 
     @Test
@@ -78,7 +78,7 @@ class EmployeeServiceTest {
                 .email("random@gmail.com")
                 .build();
         List<Employee> employeeList = List.of(this.employee, employee2);
-        given(employeeRepository.findAll()).willReturn(employeeList);
+        given(employeeRepositoryMock.findAll()).willReturn(employeeList);
 
         //when
         List<Employee> getEmployeeList = employeeService.getAllEmployees();
@@ -86,16 +86,16 @@ class EmployeeServiceTest {
         //then
         assertThat(getEmployeeList).hasSize(2);
         assertThat(getEmployeeList.size()).isEqualTo(2);
-        then(employeeRepository).should(times(1)).findAll();
-        then(employeeRepository).should(atLeast(1)).findAll();
-        then(employeeRepository).should(atMostOnce()).findAll();
+        then(employeeRepositoryMock).should(times(1)).findAll();
+        then(employeeRepositoryMock).should(atLeast(1)).findAll();
+        then(employeeRepositoryMock).should(atMostOnce()).findAll();
     }
 
     @Test
     @DisplayName("JUnit test for verifying if Employee's collection is empty")
     void givenEmptyEmployeeList_whenGetAllEmployees_thenReturnEmptyEmployeeList() {
         //given
-        given(employeeRepository.findAll()).willReturn(Collections.emptyList());
+        given(employeeRepositoryMock.findAll()).willReturn(Collections.emptyList());
 
         //when
         List<Employee> getEmployeeList = employeeService.getAllEmployees();
@@ -109,33 +109,33 @@ class EmployeeServiceTest {
     @DisplayName("JUnit test for fetching single Employee object by given ID")
     void givenEmployeeObject_whenGetEmployeeById_thenReturnEmployee() {
         //given
-        given(employeeRepository.findById(anyLong())).willReturn(Optional.of(employee));
+        given(employeeRepositoryMock.findById(anyLong())).willReturn(Optional.of(employee));
 
         //when
         Employee emp = employeeService.getEmployeeById(anyLong());
 
         //then
         assertThat(emp).isNotNull();
-        then(employeeRepository).should(atLeastOnce()).findById(anyLong());
+        then(employeeRepositoryMock).should(atLeastOnce()).findById(anyLong());
     }
 
     @Test
     @DisplayName("JUnit test for testing exception invocation")
     void givenEmployeeObjet_whenGetEmployeeById_thenReturnEmployee() {
         //given
-        given(employeeRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(employeeRepositoryMock.findById(anyLong())).willReturn(Optional.empty());
 
         //when
         //then
         assertThrows(ResourceNotFoundException.class, () -> employeeService.getEmployeeById(anyLong()));
-        then(employeeRepository).should(atLeastOnce()).findById(anyLong());
+        then(employeeRepositoryMock).should(atLeastOnce()).findById(anyLong());
     }
 
     @Test
     @DisplayName("JUnit test for updating Employee object")
     void givenEmployeeObjet_whenUpdateEmployee_thenReturnEmployeeUpdated() {
         //given
-        given(employeeRepository.save(employee)).willReturn(employee);
+        given(employeeRepositoryMock.save(employee)).willReturn(employee);
         employee.setEmail("whatever@asd.com");
         employee.setFirstName("Mattrandom");
 
@@ -157,7 +157,7 @@ class EmployeeServiceTest {
         employeeService.deleteEmployee(employeeId);
 
         //then
-        then(employeeRepository).should(atLeastOnce()).deleteById(employeeId);
+        then(employeeRepositoryMock).should(atLeastOnce()).deleteById(employeeId);
 
     }
 
