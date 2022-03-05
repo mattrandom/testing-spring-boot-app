@@ -19,8 +19,7 @@ import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -203,4 +202,17 @@ class EmployeeControllerTest {
     }
 
 
+    @Test
+    @DisplayName("Testing DELETE method")
+    void givenEmployeeId_whenDeleteEmployee_thenNoContent() throws Exception {
+        //given
+        willDoNothing().given(employeeServiceMockBean).deleteEmployee(anyLong());
+
+        //when
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", anyLong()));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isNoContent());
+    }
 }

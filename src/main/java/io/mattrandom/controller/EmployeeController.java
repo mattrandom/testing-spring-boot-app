@@ -46,4 +46,10 @@ public class EmployeeController {
                 })
                 .orElseGet( () -> ResponseEntity.notFound().build() );
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Employee deleted successfully");
+    }
 }
