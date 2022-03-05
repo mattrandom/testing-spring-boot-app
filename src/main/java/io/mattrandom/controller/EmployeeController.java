@@ -25,4 +25,11 @@ public class EmployeeController {
     public ResponseEntity<List<Employee>> getEmployees() {
         return ResponseEntity.status(HttpStatus.OK).body(employeeService.getAllEmployees());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+        return employeeService.getEmployeeByIdOptional(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }

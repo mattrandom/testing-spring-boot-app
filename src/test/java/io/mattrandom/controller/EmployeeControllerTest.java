@@ -3,28 +3,28 @@ package io.mattrandom.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mattrandom.model.Employee;
 import io.mattrandom.service.EmployeeService;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest
 class EmployeeControllerTest {
@@ -52,16 +52,17 @@ class EmployeeControllerTest {
 
         //when
         ResultActions response = mockMvc.perform(post("/api/employees")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(employee)));
 
         //then
-        response.andDo(MockMvcResultHandlers.print())
+        response.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.firstName", CoreMatchers.is(employee.getFirstName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lastName", CoreMatchers.is(employee.getLastName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.email", CoreMatchers.is(employee.getEmail())))
-                .andExpect(ResponseBodyMatchers.responseBody().containsObjectAsJson(employee, Employee.class));;
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())))
+                .andExpect(responseBody().containsObjectAsJson(employee, Employee.class));
+        ;
     }
 
     @Test
@@ -88,9 +89,54 @@ class EmployeeControllerTest {
         ResultActions response = mockMvc.perform(get("/api/employees"));
 
         //then
-        response.andDo(MockMvcResultHandlers.print())
+        response.andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(employees.size())));
+                .andExpect(jsonPath("$.size()", is(employees.size())))
+                .andExpect(jsonPath("$.[0].firstName", is(employees.get(0).getFirstName())));
+    }
+
+    @Test
+    @DisplayName("Testing GET by id method - positive scenario")
+    void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() throws Exception {
+        //given
+        Long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        given(employeeService.getEmployeeByIdOptional(employeeId)).willReturn(Optional.of(employee));
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())));
+    }
+
+    @Test
+    @DisplayName("Testing GET by id method - negative scenario")
+    void givenInvalidEmployeeId_whenGetEmployeeById_thenNotFound() throws Exception {
+        //given
+        Long employeeId = 1L;
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        given(employeeService.getEmployeeByIdOptional(employeeId)).willReturn(Optional.empty());
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isNotFound());
+
     }
 
 }
