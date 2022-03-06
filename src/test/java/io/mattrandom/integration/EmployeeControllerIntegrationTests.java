@@ -10,19 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -187,6 +183,67 @@ public class EmployeeControllerIntegrationTests {
 
         //when
         ResultActions response = mockMvc.perform(get("/api/employees/{id}", wrongEmployeeId));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Testing PUT method - integration testing - positive scenario")
+    void givenUpdatedEmployee_whenUpdateEmployee_thenReturnUpdatedEmployeeObject() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+
+        employeeRepository.save(employee);
+
+        Employee employeeRequest = Employee.builder()
+                .id(employee.getId())
+                .firstName("Request")
+                .lastName("Request")
+                .email("request@gmail.com")
+                .build();
+
+        //when
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", employee.getId())
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(employeeRequest)));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.firstName", is(employeeRequest.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employeeRequest.getLastName())))
+                .andExpect(jsonPath("$.email", is(employeeRequest.getEmail())))
+                .andExpect(responseBody().containsObjectAsJson(employeeRequest, Employee.class));
+    }
+
+    @Test
+    @DisplayName("Testing PUT method - integration testing - negative scenario")
+    void givenUpdatedEmployee_whenUpdateEmployee_thenNotFound() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+
+        employeeRepository.save(employee);
+
+        Employee employeeRequest = Employee.builder()
+                .firstName("Request")
+                .lastName("Request")
+                .email("request@gmail.com")
+                .build();
+
+        //when
+        ResultActions response = mockMvc.perform(put("/api/employees/{id}", 666L)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(employeeRequest)));
 
         //then
         response.andDo(print())
