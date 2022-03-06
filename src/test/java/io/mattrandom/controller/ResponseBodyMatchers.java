@@ -17,7 +17,7 @@ public class ResponseBodyMatchers {
         };
     }
 
-    static ResponseBodyMatchers responseBody() {
+    public static ResponseBodyMatchers responseBody() {
         return new ResponseBodyMatchers();
     }
 }

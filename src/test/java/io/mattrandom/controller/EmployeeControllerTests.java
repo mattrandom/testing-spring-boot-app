@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest
-class EmployeeControllerTest {
+class EmployeeControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
