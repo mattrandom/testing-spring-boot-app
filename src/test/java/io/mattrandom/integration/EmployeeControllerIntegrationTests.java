@@ -3,6 +3,7 @@ package io.mattrandom.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mattrandom.model.Employee;
 import io.mattrandom.repository.EmployeeRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +18,6 @@ import java.util.List;
 
 import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

@@ -1,10 +1,13 @@
-package io.mattrandom.repository;
+package io.mattrandom.integration;
 
 import io.mattrandom.model.Employee;
+import io.mattrandom.repository.EmployeeRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -14,8 +17,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ActiveProfiles("test") // it uses in-memory DB config
-class EmployeeRepositoryTests {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // it disables in-memory DB support
+@ActiveProfiles("integrationtest") // it uses MySQL DB config for MySQL integration testing support
+class EmployeeRepositoryIntegrationTests {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -29,6 +33,11 @@ class EmployeeRepositoryTests {
                 .lastName("Random")
                 .email("test@gmail.com")
                 .build();
+    }
+
+    @BeforeEach
+    void tearDown() {
+        employeeRepository.deleteAll();
     }
 
     @Test
