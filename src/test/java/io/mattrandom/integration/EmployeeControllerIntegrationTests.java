@@ -10,13 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -146,5 +149,47 @@ public class EmployeeControllerIntegrationTests {
         employee2Post.andExpect(responseBody().containsObjectAsJson(employee2, Employee.class));
     }
 
+    @Test
+    @DisplayName("Testing GET by id method - integration testing - positive scenario")
+    void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        employeeRepository.save(employee);
 
+        //when
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employee.getId()));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())))
+                .andExpect(responseBody().containsObjectAsJson(employee, Employee.class));
+
+    }
+
+    @Test
+    @DisplayName("Testing GET by id method - integration testing - negative scenario")
+    void givenInvalidEmployeeId_whenGetEmployeeById_thenNotFound() throws Exception {
+        //given
+        Long wrongEmployeeId = 100L;
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+        employeeRepository.save(employee);
+
+        //when
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", wrongEmployeeId));
+
+        //then
+        response.andDo(print())
+                .andExpect(status().isNotFound());
+    }
 }
