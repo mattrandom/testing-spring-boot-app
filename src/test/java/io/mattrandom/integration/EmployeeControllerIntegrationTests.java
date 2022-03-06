@@ -12,9 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static io.mattrandom.controller.ResponseBodyMatchers.responseBody;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -70,4 +74,77 @@ public class EmployeeControllerIntegrationTests {
                 .andExpect(jsonPath("$.email", is(employee.getEmail())))
                 .andExpect(responseBody().containsObjectAsJson(employee, Employee.class));
     }
+
+    @Test
+    @DisplayName("Testing GET all method - integration testing")
+    void givenEmployeeList_whenGetEmployees_thenReturnEmployeeList() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+
+        Employee employee2 = Employee.builder()
+                .firstName("Matheus")
+                .lastName("Siegmund")
+                .email("ok@gmail.com")
+                .build();
+
+        List<Employee> employees = Arrays.asList(employee, employee2);
+        employeeRepository.saveAll(employees);
+
+        //when
+        ResultActions responseGet = mockMvc.perform(get("/api/employees"));
+
+        //then
+        responseGet.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(employees.size())))
+                .andExpect(jsonPath("$.[0].firstName", is(employees.get(0).getFirstName())));
+    }
+
+    @Test
+    @DisplayName("Testing GET all method - integration testing - alternative version")
+    void givenEmployeeList_whenGetEmployees_thenReturnEmployeeLis_ALTERNATIVE() throws Exception {
+        //given
+        Employee employee = Employee.builder()
+                .id(1L)
+                .firstName("Matt")
+                .lastName("Random")
+                .email("test@gmail.com")
+                .build();
+
+        Employee employee2 = Employee.builder()
+                .id(2L)
+                .firstName("Matheus")
+                .lastName("Siegmund")
+                .email("ok@gmail.com")
+                .build();
+
+        //when
+        ResultActions employeePost = mockMvc.perform(post("/api/employees")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(employee)));
+
+        ResultActions employee2Post = mockMvc.perform(post("/api/employees")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(employee2)));
+
+        ResultActions responseGet = mockMvc.perform(get("/api/employees"));
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        //then
+        responseGet.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(employees.size())))
+                .andExpect(jsonPath("$.[0].firstName", is(employees.get(0).getFirstName())));
+
+        employeePost.andExpect(responseBody().containsObjectAsJson(employee, Employee.class));
+
+        employee2Post.andExpect(responseBody().containsObjectAsJson(employee2, Employee.class));
+    }
+
+
 }
