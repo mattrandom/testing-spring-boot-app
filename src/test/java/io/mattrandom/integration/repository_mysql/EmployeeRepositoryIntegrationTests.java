@@ -1,4 +1,4 @@
-package io.mattrandom.integration;
+package io.mattrandom.integration.repository_mysql;
 
 import io.mattrandom.model.Employee;
 import io.mattrandom.repository.EmployeeRepository;

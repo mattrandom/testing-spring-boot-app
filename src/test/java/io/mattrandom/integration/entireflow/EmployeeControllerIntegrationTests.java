@@ -1,4 +1,4 @@
-package io.mattrandom.integration;
+package io.mattrandom.integration.entireflow;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mattrandom.model.Employee;
