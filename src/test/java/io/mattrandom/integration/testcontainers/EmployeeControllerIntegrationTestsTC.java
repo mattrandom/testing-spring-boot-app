@@ -36,10 +36,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EmployeeControllerIntegrationTestsTC {
 
     @Container
-    private static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:latest")
-            .withUsername("test")
-            .withPassword("test")
-            .withDatabaseName("tcdb");
+    private static MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:latest");
+
+    @DynamicPropertySource
+    public static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", mySQLContainer::getUsername);
+        registry.add("spring.datasource.password", mySQLContainer::getPassword);
+    }
 
     @Autowired
     private MockMvc mockMvc;
